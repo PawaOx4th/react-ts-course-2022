@@ -1,33 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useCallback, useRef, useState } from "react"
+import reactLogo from "./assets/react.svg"
+import "./App.css"
+import PersonProvider from "./context/PersonProvider"
+import Header from "./components/Header"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [weight, setWeight] = useState<number>(0)
+  const [height, setHeight] = useState<number>(0)
+
+  const handleSetWeight = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWeight(+e.target.value)
+  }
+
+  const handleCalculateBMI = () => {
+    const result = weight / ((height / 100) ^ 2)
+    console.log("🍉 RESULT :", result)
+  }
+
+  const handleCalculateBMIWithUseCallBack = useCallback(
+    (w: number, h: number) => {
+      const result = w / ((h / 100) ^ 2)
+      console.log("🍕 RESULT :", result)
+    },
+    []
+  )
+
+  const formEle = useRef<HTMLFormElement>(null)
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <PersonProvider>
+      <form
+        ref={formEle}
+        onSubmit={(e) => {
+          e.preventDefault()
+          handleCalculateBMI()
+        }}
+        style={{}}
+      >
+        <input
+          type="number"
+          value={weight}
+          onChange={(e) => {
+            handleSetWeight(e)
+          }}
+        />
+        <input
+          type="number"
+          value={height}
+          onChange={(e) => {
+            setHeight(+e.target.value)
+          }}
+        />
+        <button type="submit">Submit</button>
+      </form>
+    </PersonProvider>
   )
 }
 
